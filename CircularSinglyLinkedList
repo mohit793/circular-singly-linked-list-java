@@ -1,0 +1,209 @@
+
+import java.util.Scanner;
+
+public class CircularSinglyLinkedList {
+
+    static class Node {
+        int playerId;
+        String playerName;
+        Node next;
+
+        Node(int playerId, String playerName) {
+            this.playerId = playerId;
+            this.playerName = playerName;
+            this.next = null;
+        }
+    }
+
+    static class CircularList {
+        Node tail = null;
+        Node current = null;
+
+        // Insert a player into the circle
+        void insertPlayer(int id, String name) {
+            Node newNode = new Node(id, name);
+
+            if (tail == null) {
+                tail = newNode;
+                newNode.next = newNode;
+                current = newNode;
+            } else {
+                newNode.next = tail.next;
+                tail.next = newNode;
+                tail = newNode;
+            }
+
+            System.out.println("Player added successfully.");
+        }
+
+        // Delete a player using their ID
+        void deletePlayer(int id) {
+            if (tail == null) {
+                System.out.println("No players in the game.");
+                return;
+            }
+
+            Node previous = tail;
+            Node temp = tail.next;
+
+            do {
+                if (temp.playerId == id) {
+                    if (temp == temp.next) {
+                        tail = null;
+                        current = null;
+                    } else {
+                        previous.next = temp.next;
+
+                        if (temp == tail) {
+                            tail = previous;
+                        }
+
+                        if (temp == current) {
+                            current = temp.next;
+                        }
+                    }
+
+                    System.out.println("Player deleted successfully.");
+                    return;
+                }
+
+                previous = temp;
+                temp = temp.next;
+
+            } while (temp != tail.next);
+
+            System.out.println("Player ID not found.");
+        }
+
+        // Display all players in the circle
+        void displayPlayers() {
+            if (tail == null) {
+                System.out.println("No players in the game.");
+                return;
+            }
+
+            Node temp = tail.next;
+
+            System.out.println("\nPlayers in the circle:");
+
+            do {
+                System.out.println(
+                    "ID: " + temp.playerId +
+                    ", Name: " + temp.playerName
+                );
+
+                temp = temp.next;
+
+            } while (temp != tail.next);
+        }
+
+        // Show whose turn it is
+        void showCurrentPlayer() {
+            if (current == null) {
+                System.out.println("No players in the game.");
+                return;
+            }
+
+            System.out.println(
+                "Current turn: " + current.playerName +
+                " (ID: " + current.playerId + ")"
+            );
+        }
+
+        // Move to the next player's turn
+        void nextTurn() {
+            if (current == null) {
+                System.out.println("No players in the game.");
+                return;
+            }
+
+            current = current.next;
+
+            System.out.println(
+                "Next turn: " + current.playerName +
+                " (ID: " + current.playerId + ")"
+            );
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        CircularList game = new CircularList();
+
+        int choice;
+
+        do {
+            System.out.println("\n===== PLAYER TURN MANAGEMENT =====");
+            System.out.println("1. Insert Player");
+            System.out.println("2. Delete Player");
+            System.out.println("3. Display All Players");
+            System.out.println("4. Show Current Player");
+            System.out.println("5. Move to Next Turn");
+            System.out.println("6. Exit");
+            System.out.print("Enter your choice: ");
+
+            while (!sc.hasNextInt()) {
+                System.out.print("Enter a valid number: ");
+                sc.next();
+            }
+
+            choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter Player ID: ");
+
+                    while (!sc.hasNextInt()) {
+                        System.out.print("Enter a valid ID: ");
+                        sc.next();
+                    }
+
+                    int id = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.print("Enter Player Name: ");
+                    String name = sc.nextLine();
+
+                    game.insertPlayer(id, name);
+                    break;
+
+                case 2:
+                    System.out.print("Enter Player ID to delete: ");
+
+                    while (!sc.hasNextInt()) {
+                        System.out.print("Enter a valid ID: ");
+                        sc.next();
+                    }
+
+                    int deleteId = sc.nextInt();
+                    sc.nextLine();
+
+                    game.deletePlayer(deleteId);
+                    break;
+
+                case 3:
+                    game.displayPlayers();
+                    break;
+
+                case 4:
+                    game.showCurrentPlayer();
+                    break;
+
+                case 5:
+                    game.nextTurn();
+                    break;
+
+                case 6:
+                    System.out.println("Game management ended.");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice. Try again.");
+            }
+
+        } while (choice != 6);
+
+        sc.close();
+    }
+}
